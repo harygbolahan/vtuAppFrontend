@@ -124,22 +124,27 @@ const AuthProvider = ({ children }) => {
 
     // In your UserContext
     const fetchUserData = useCallback(async () => {
+        // setLoading(true);
         try {
             const res = await axios.get(`${apiUrl}/users/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
+    
             const user = res.data.data.user;
             console.log('user', user);
-
+    
             setUser(user);
             localStorage.setItem("user", JSON.stringify(user));
         } catch (err) {
-            console.log(err);
+            console.error('Error fetching user data:', err);
+        } finally {
+            // Ensure loading state is reset regardless of success or error
+            // setLoading(false);
         }
-    }, [token]); // Token as dependency if it can change
+    }, [token]);
+    // Token as dependency if it can change
 
     const updateProfile = async (data) => {
         // setLoading(true);

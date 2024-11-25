@@ -44,10 +44,8 @@ export default function Component() {
       navigate('/login');
     }
 
-    if (!user.transaction_pin) {
-      setShowSetPinDialog(true);
-    }
-  }, [isAuthenticated, token]); // Reduce dependencies to only necessary ones
+    
+  }, [isAuthenticated, token, user]); // Reduce dependencies to only necessary ones
   
 
   const services = [
@@ -260,7 +258,7 @@ export default function Component() {
                           <Grid className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium">₦{`${transaction.amount} ${transaction.network} ${transaction.type}`}</p>
+                          <p className="font-medium">₦{transaction.description}</p>
                           <p className="text-sm text-white/60">
                             {new Date(transaction.createdAt).toLocaleDateString('en-US', {
                               month: 'short',

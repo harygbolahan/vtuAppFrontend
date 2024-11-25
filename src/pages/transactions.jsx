@@ -59,17 +59,23 @@ const Component = () => {
   const uniqueTypes = useMemo(() => [...new Set(transactions.map(t => t.type))], [transactions]);
 
   const filteredTransactions = useMemo(() => {
-    return transactions.filter(transaction =>
-      (searchQuery === '' || 
-       transaction.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       transaction.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       transaction.network?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       transaction.amount.toString().includes(searchQuery) ||
-       transaction.transactionId.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (statusFilter === null || transaction.status === statusFilter) &&
-      (typeFilters.length === 0 || typeFilters.includes(transaction.type))
-    );
+    return transactions.filter(transaction => {
+      // Debugging: Log the transaction object to identify issues
+      console.log("Filtering transaction:", transaction);
+  
+      return (
+        (searchQuery === '' || 
+          transaction.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          transaction.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          transaction.network?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          transaction.amount?.toString().includes(searchQuery) ||
+          transaction.transactionId?.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (statusFilter === null || transaction.status === statusFilter) &&
+        (typeFilters.length === 0 || typeFilters.includes(transaction.type))
+      );
+    });
   }, [transactions, searchQuery, statusFilter, typeFilters]);
+  
 
   const pageCount = Math.ceil(filteredTransactions.length / itemsPerPage);
   const paginatedTransactions = filteredTransactions.slice(
@@ -162,7 +168,7 @@ const Component = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">
-                      <div className="font-medium truncate">{transaction.network + '   ' + transaction.amount}</div>
+                      <div className="font-medium truncate">{transaction.description}</div>
                       <div className={`font-medium ${transaction.isCredit ? 'text-green-500' : 'text-red-500'}`}>
                         {transaction.isCredit ? '+' : '-'} ₦{transaction.amount.toFixed(2)}
                       </div>
@@ -240,8 +246,8 @@ const Component = () => {
                   </div>
                 </div>
                 <div className="flex justify-between py-2 border-b">
-                  <span className="text-muted-foreground text-sm">Type</span>
-                  <span className='text-sm'>{selectedTransaction.type || selectedTransaction.transactionId}</span>
+                  <span className="text-muted-foreground text-sm">Description</span>
+                  <span className='text-sm text-end'> N{selectedTransaction.description || selectedTransaction.transactionId}</span>
                 </div>
                 {selectedTransaction.previousBalance !== undefined && (
                   <div className="flex justify-between py-2 border-b">

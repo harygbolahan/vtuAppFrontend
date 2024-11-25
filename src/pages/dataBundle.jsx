@@ -29,7 +29,7 @@ import { format } from 'date-fns'
 const orangeAccent = "bg-[#8B0000] text-white"
 
 const networks = [
-  { id: "1", name: "MTN", networkId: 1, logo: "src/assets/logos/mtnLogo.png" },
+  { id: "1", name: "MTN", networkId: 1, logo: "../../assets/logos/mtnLogo.png" },
   { id: "4", name: "Airtel", networkId: 4, logo: "src/assets/logos/airtelLogo.png" },
   { id: "2", name: "Glo", networkId: 2, logo: "src/assets/logos/gloLogo.png" },
   { id: "3", name: "9mobile", networkId: 3, logo: "src/assets/logos/9mobileLogo.png" },
@@ -130,6 +130,11 @@ export default function Component() {
   const handleCompletePurchase = async () => {
     setIsLoading(true)
     try {
+        if (user.transaction_pin !== formData.pin) {
+            toast.error("Invalid pin. Please try again.")
+            return
+        }
+
       const res = await buyData(formData)
       setIsLoading(false)
       setStep(4)
