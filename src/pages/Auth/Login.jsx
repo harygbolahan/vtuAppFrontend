@@ -19,7 +19,8 @@ const LoginSchema = Yup.object().shape({
 
 function Login() {
   const navigate = useNavigate();
-  const { login, loading } = useContext(AuthContext); // Get login function and loading state from AuthContext
+  const { login, loading } = useContext(AuthContext); 
+  
   const [showPassword, setShowPassword] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
@@ -86,7 +87,7 @@ function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-grow flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-[90%] max-w-md space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Welcome back</h2>
             <p className="text-gray-600 mt-2">Please enter your details to sign in</p>

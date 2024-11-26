@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Landing from './pages/LandingPage'
 import Dashboard from './pages/dashboard'
 import Transactions from './pages/transactions'
 import TransactionDetail from './pages/transactionDetails'
@@ -29,7 +30,7 @@ const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Login />} />
+        <Route path='/' element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/transaction/:id" element={<TransactionDetail />} />

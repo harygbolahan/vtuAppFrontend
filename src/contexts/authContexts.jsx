@@ -298,6 +298,29 @@ const AuthProvider = ({ children }) => {
 
     }
 
+    const forgetPassword = async (data) => {
+        try {
+            console.log('Data', data);
+
+            const payload = {
+                email: data.email
+            }
+
+            console.log('Payload', payload);
+            const res = await axios.post(`${apiUrl}/auth/forgot-password`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            return res.data
+
+        } catch (error) {
+            console.log('Auth err', error.response.data);
+            return error.response.data
+
+        }
+    }
+
 
 
     const logout = () => {
@@ -324,7 +347,8 @@ const AuthProvider = ({ children }) => {
         updatePin,
         changePin,
         resetPin,
-        changePassword
+        changePassword,
+        forgetPassword
     };
 
     return (

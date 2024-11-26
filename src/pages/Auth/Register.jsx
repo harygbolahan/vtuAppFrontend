@@ -53,12 +53,10 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b px-4 py-4">
-        {/* Header content */}
-      </header>
+      
 
       <main className="flex-grow flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-[90%] max-w-md space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Create an account</h2>
             <p className="text-gray-600 mt-2">Please fill in your details to sign up</p>

@@ -1,4 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../contexts/authContexts';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
@@ -11,14 +13,32 @@ const ForgotPasswordSchema = Yup.object().shape({
 });
 
 function ForgotPassword() {
+  const { forgetPassword } = useContext(AuthContext); 
+
 const navigate = useNavigate();
-  const handleSubmit = (values, { setSubmitting }) => {
-    console.log('Forgot password submitted:', values);
-    setTimeout(() => {
-        navigate('/');
-    },3000)
-    toast.success('Password reset email sent!');
-    setSubmitting(false);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      setSubmitting(true);
+      console.log('Forgot password submitted:', values);
+
+      const response = await forgetPassword(values);
+
+      console.log(response);
+
+      if (response.status == 'success') {
+        toast.success(`${response.message}`);
+        navigate('/login');
+      } else{
+        throw new Error(response.message);
+      }
+    
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+      
+    } finally{
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -57,7 +77,7 @@ const navigate = useNavigate();
                   {errors.email && touched.email && <div className="text-red-500 text-sm">{errors.email}</div>}
                 </div>
 
-                <Button type="submit" className="w-full bg-green-500 hover:bg-green-600" disabled={isSubmitting}>
+                <Button type="submit" className="w-full bg-[#8B0000] hover:bg-orange-600" disabled={isSubmitting}>
                   {isSubmitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               </Form>
@@ -66,7 +86,7 @@ const navigate = useNavigate();
 
           <p className="text-center text-sm text-gray-600">
             Remember your password?{' '}
-            <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
+            <Link to="/login" className="font-medium text-[#8B0000] hover:text-orange-600">
               Sign in
             </Link>
           </p>

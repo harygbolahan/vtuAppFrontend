@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
 
-import React, { useState, useEffect, useContext } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { AuthContext } from "../contexts/authContexts"
 import { TransactionContext } from "../contexts/txnContext"
-import { Bell, Gift, Grid, MoreHorizontal, Phone, PlusCircle, Power, Send, ArrowRight, CircleUser, Tv, Keyboard, GraduationCap, MessageSquare, Repeat, X, Copy, Share2, EyeOff, Eye, Moon, Sun } from 'lucide-react'
+import { Bell, Gift, Grid, MoreHorizontal, Phone, PlusCircle, Power, Send, ArrowRight, CircleUser, Tv, Keyboard, GraduationCap, MessageSquare, Repeat,  Copy, Share2, EyeOff, Eye, Moon, Sun } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
