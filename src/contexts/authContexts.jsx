@@ -133,7 +133,7 @@ const AuthProvider = ({ children }) => {
             });
     
             const user = res.data.data.user;
-            console.log('user', user);
+            // console.log('user', user);
     
             setUser(user);
             localStorage.setItem("user", JSON.stringify(user));

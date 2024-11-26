@@ -46,12 +46,12 @@ const TransactionProvider = ({ children }) => {
       // Correctly access the response data
       const plans = res.data.dataPlans || [];
 
-      console.log('Response', res);
+      // console.log('Response', res);
 
-      console.log('Plan res', plans);
+      // console.log('Plan res', plans);
 
       setPlans(plans);
-      console.log('DataPlans', plans);
+      // console.log('DataPlans', plans);
 
       return plans;
     } catch (err) {
@@ -74,7 +74,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res);
+      // console.log(res);
 
       setTransactions(res.data.data || []);
       return res;
@@ -98,7 +98,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", res.data);
+      // console.log("Res", res.data);
       //   setLoading(false)
       return res.data;
     } catch (err) {
@@ -122,7 +122,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", res.data);
+      // console.log("Res", res.data);
       //   setLoading(false)
       return res.data;
     } catch (err) {
@@ -168,7 +168,7 @@ const TransactionProvider = ({ children }) => {
       cableType: provider
     }
 
-    console.log('FormData', formData);
+    // console.log('FormData', formData);
 
 
     try {
@@ -180,7 +180,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", cableVer);
+      // console.log("Res", cableVer);
       //   setLoading(false)
       return cableVer.data;
     } catch (err) {
@@ -209,7 +209,7 @@ const TransactionProvider = ({ children }) => {
       reference
     }
 
-    console.log('Payload', payload);
+    // console.log('Payload', payload);
 
     try {
       const res = await axios.post(`${apiUrl}/cable/purchase-cable`, {
@@ -220,7 +220,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", res);
+      // console.log("Res", res);
       //   setLoading(false)
       return res.data;
     } catch (err) {
@@ -248,7 +248,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", meterVer);
+      // console.log("Res", meterVer);
       // setLoading(false)
       return meterVer.data;
     } catch (err) {
@@ -280,7 +280,7 @@ const TransactionProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Res", electricToken);
+      // console.log("Res", electricToken);
       // setLoading(false)
       return electricToken.data;
     }

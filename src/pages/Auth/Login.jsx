@@ -20,7 +20,7 @@ const LoginSchema = Yup.object().shape({
 function Login() {
   const navigate = useNavigate();
   const { login, loading } = useContext(AuthContext); 
-  
+
   const [showPassword, setShowPassword] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
@@ -62,18 +62,18 @@ function Login() {
       const response = await login(values);
 
       // Log the response from the login function
-      console.log('Login response:', response);
+      // console.log('Login response:', response);
 
       if (response && response.token) {
         // setIsLoading(false);
         // Redirect to the dashboard after a successful login
         navigate('/dashboard');
       } else {
-        throw new Error('Invalid response from server');
+        throw new Error(response.message);
       }
     } catch (error) {
-      toast.error(`${error}`)
-      console.error('Login Error:', error);
+      // toast.error(`${error}`)
+      // console.error('Login Error:', error);
       setSubmitting(false);
 
       // Display an error toast notification

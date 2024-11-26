@@ -1,25 +1,42 @@
 /* eslint-disable react/prop-types */
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AuthContext } from '../contexts/authContexts'
-import { Bell, CreditCard, FileText,  KeyRound, Lock, LogOut, MessageSquare, PieChart, Shield, Users, UserCircle, Building2, ArrowLeft} from 'lucide-react'
+import { Bell, CreditCard, FileText, KeyRound, Lock, LogOut, MessageSquare, PieChart, Shield, Users, UserCircle, Building2, ArrowLeft, Menu } from 'lucide-react'
 // import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export default function ProfilePage() {
-  const { user } = useContext(AuthContext); 
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated, token, isTokenValid, fetchUserData } = useContext(AuthContext);
 
-  console.log('User', user);
-  
+  console.log('User:', user);
+
+  // Effect to check authentication status and token validity
+  useEffect(() => {
+    if (isAuthenticated && isTokenValid(token)) {
+      fetchUserData();
+    } else {
+      toast.error("Session expired. Please login again.");
+      navigate('/login');
+    }
+  }, [isAuthenticated, token, isTokenValid, navigate]);
+
+  // Logout handler
+  const handleLogout = () => {
+    logout(); // Call the logout function from AuthContext
+    navigate('/login'); // Navigate to login page
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-[#8B0000] text-white p-6 flex items-center">
         <Link to='/dashboard'>
-        <ArrowLeft />
+          <ArrowLeft />
         </Link>
         <h1 className="text-2xl font-bold mx-5">My Profile</h1>
       </header>
@@ -36,7 +53,7 @@ export default function ProfilePage() {
             <p className="text-gray-600">{user?.bank || 'SafeHaven'}</p>
           </div>
         </div>
-        
+
         {/* Level Badge */}
         <Card className="mt-4 bg-gray-50">
           <CardContent className="p-4 flex items-center justify-between">
@@ -59,11 +76,9 @@ export default function ProfilePage() {
           <Card>
             <CardContent className="p-0">
               <MenuLink to="/profile-settings" icon={<UserCircle />} text="Profile Details" />
-              <MenuLink to="/request-account" icon={<Building2 />} text="Request Account Number" />
-              <MenuLink to="/live-chat" icon={<MessageSquare />} text="Live Chat" />
-              <MenuLink to="/saved-cards" icon={<CreditCard />} text="Saved Cards" />
+              {/* <MenuLink to="/request-account" icon={<Building2 />} text="Request Account Number" /> */}
+              <MenuLink to="/support" icon={<MessageSquare />} text="Support" />
               <MenuLink to="/account-verification" icon={<Shield />} text="Account Verification" />
-              <MenuLink to="/account-levels" icon={<PieChart />} text="Account Levels" />
               <MenuLink to="/referrals" icon={<Users />} text="Referrals" />
             </CardContent>
           </Card>
@@ -86,12 +101,22 @@ export default function ProfilePage() {
           <h3 className="text-lg font-medium text-gray-600 mb-3">More</h3>
           <Card>
             <CardContent className="p-0">
+
+              <MenuLink to="/privacy-policy" icon={<Bell />} text="Privacy Policy" />
+              <MenuLink to="/terms" icon={<FileText />} text="Terms & Condtions" />
+              {/* <MenuLink to="/support" icon={<MessageSquare />} text="Contact Support" /> */}
               <MenuLink to="/close-account" icon={<Shield />} text="Close Account" danger />
-              <MenuLink to="/privacy-policy" icon={<Bell />} text="Privacy Policy"  />
-              <MenuLink to="/terms" icon={<FileText />} text="Terms & Condtions"  />
-              <MenuLink to="/contact-support" icon={<MessageSquare />} text="Contact Support" />
-              <MenuLink to="/logout" icon={<LogOut />} text="Logout" danger />
-            </CardContent>
+
+
+              {/* <MenuLink to="#" icon={<LogOut />} text="Logout" danger onClick={handleLogout} />    */}
+
+              <Button onClick={handleLogout} className='text-red-600 bg-white hover:bg-white ' >
+               <LogOut height='36px' /> <Link to="/logout">Logout</Link>
+              </Button>         
+              </CardContent>
+
+              
+              
           </Card>
         </section>
       </div>
@@ -100,13 +125,13 @@ export default function ProfilePage() {
   )
 }
 
-function MenuLink({ to, icon, text, danger = false }) {
+function MenuLink({ to, icon, text, danger = false, onclick }) {
   return (
     <Link
       to={to}
-      className={`flex items-center justify-between p-4 border-b last:border-0 hover:bg-gray-50 ${
-        danger ? 'text-red-600' : ''
-      }`}
+      className={`flex items-center justify-between p-4 border-b last:border-0 hover:bg-gray-50 ${danger ? 'text-red-600' : ''
+        }`}
+        onClick={onclick}
     >
       <div className="flex items-center gap-3">
         <span className="text-gray-500">{icon}</span>

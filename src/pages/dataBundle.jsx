@@ -49,7 +49,7 @@ export default function Component() {
     amount: "",
   })
 
-  console.log('user', user.transaction_pin);
+  // console.log('user', user.transaction_pin);
   
   const [isLoading, setIsLoading] = useState(false)
   const [purchaseResult, setPurchaseResult] = useState(null)
@@ -139,7 +139,7 @@ export default function Component() {
       setIsLoading(false)
       setStep(4)
       setPurchaseResult(res)
-      console.log('DataBundle', res)
+      // console.log('DataBundle', res)
 
       if (res.message === "Data purchase successful") {
         toast.success(`Data purchase successful`)
