@@ -29,7 +29,7 @@ const providers = [
 ]
 
 export default function CableSubscription() {
-  const { isAuthenticated, isTokenValid, token } = useContext(AuthContext)
+  const { isAuthenticated, isTokenValid, token, user } = useContext(AuthContext)
   const { cablePlans, verifyCablePlan, buyCable } = useContext(TransactionContext)
   const [step, setStep] = useState(1)
   const [provider, setProvider] = useState('')
@@ -94,7 +94,13 @@ export default function CableSubscription() {
 
 
   const processPayment = async () => {
+    
     try {
+
+      if (user.transaction_pin !== pin) {
+        toast.error("Invalid pin. Please try again.")
+        return
+    }
       setIsProcessing(true);
       console.log('request', currentPlan, selectedPlan);
   
@@ -102,13 +108,18 @@ export default function CableSubscription() {
       console.log('buyCablePlan', response);
   
       // Check if the response contains an error
-      if (response.error) {
-        throw new Error(response.error);
-      }
-  
-      // If no error, proceed to success
+      if (response.error || response.status == '400' ) {
+        
+        setIsSuccess(false);
+      setStep(5);
+      throw new Error(response.error);
+      } else {  
+         // If no error, proceed to success
       setIsSuccess(true);
       setStep(5);
+      }
+  
+     
     } catch (error) {
       // Handle specific error messages
       if (error.message === 'You do not have sufficient balance to process this request') {
@@ -227,12 +238,11 @@ export default function CableSubscription() {
                     <SelectValue placeholder="Choose action" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="renew">Renew Current Plan</SelectItem>
                     <SelectItem value="change">Change Plan</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
+                
               {action === 'change' && (
                 <div className="space-y-2">
                   <Label>Select New Plan</Label>
@@ -273,7 +283,7 @@ export default function CableSubscription() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Amount:</span>
-                <span className="font-medium">₦{activePrice.toLocaleString()}</span>
+                <span className="font-medium">₦{activePrice.toLocaleString() }</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Provider:</span>

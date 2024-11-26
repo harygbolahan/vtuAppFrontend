@@ -146,7 +146,7 @@ const discos = [
 ]
 
 export default function ElectricitySubscription() {
-  const { isAuthenticated, isTokenValid, token } = useContext(AuthContext)
+  const { isAuthenticated, isTokenValid, token, user } = useContext(AuthContext)
   const { verifyMeterNumber, buyElectricToken } = useContext(TransactionContext)
   const navigate = useNavigate()
 
@@ -169,6 +169,8 @@ export default function ElectricitySubscription() {
   }, [isAuthenticated, token, navigate, isTokenValid])
 
   const verifyMeter = async () => {
+
+    
     try {
       setIsVerifying(true)
    const productId = selectedDisco.discoId
@@ -194,6 +196,10 @@ export default function ElectricitySubscription() {
   }
 
   const processPayment = async () => {
+    if (user.transaction_pin !== pin) {
+      toast.error("Invalid pin. Please try again.")
+      return
+  }
     try {
       setIsProcessing(true)
     const productId = selectedDisco.discoId

@@ -41,7 +41,7 @@ export default function AirtimePurchaseFlow() {
   const { buyAirtime } = useContext(TransactionContext)
 
   const navigate = useNavigate()
-  const { isAuthenticated, isTokenValid, token } = useContext(AuthContext)
+  const { isAuthenticated, isTokenValid, token, user } = useContext(AuthContext)
 
   useEffect(() => {
     if (!isAuthenticated || !isTokenValid(token)) {
@@ -96,6 +96,13 @@ export default function AirtimePurchaseFlow() {
       setIsLoading(true)
       setFormData(prev => ({ ...prev, pin: "" }))
       console.log('Airtime Purchase', formData);
+
+      if (user.transaction_pin !== formData.pin) {
+        toast.error("Invalid pin. Please try again.")
+        
+        setIsLoading(false)
+        return
+    }
 
       try {
         const res = await buyAirtime(formData)

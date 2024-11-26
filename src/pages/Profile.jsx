@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 'use client'
 
-import { Bell, CreditCard, FileText,  KeyRound, Lock, LogOut, MessageSquare, PieChart, Shield, Users, UserCircle, Building2 } from 'lucide-react'
+import { Bell, CreditCard, FileText,  KeyRound, Lock, LogOut, MessageSquare, PieChart, Shield, Users, UserCircle, Building2, ArrowLeft} from 'lucide-react'
 // import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -12,8 +12,11 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#8B0000] text-white p-6">
-        <h1 className="text-2xl font-bold">My Profile</h1>
+      <header className="bg-[#8B0000] text-white p-6 flex items-center">
+        <Link to='/dashboard'>
+        <ArrowLeft />
+        </Link>
+        <h1 className="text-2xl font-bold mx-5">My Profile</h1>
       </header>
 
       {/* Profile Info */}

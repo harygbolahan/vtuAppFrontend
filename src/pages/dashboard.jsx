@@ -5,7 +5,7 @@ import React, { useState, useEffect, useContext } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { AuthContext } from "../contexts/authContexts"
 import { TransactionContext } from "../contexts/txnContext"
-import { Bell, Gift, Grid, MoreHorizontal, Phone, PlusCircle, Power, Send, ArrowRight, CircleUser, Tv, Keyboard, GraduationCap, MessageSquare, Repeat, X, Copy, Share2, EyeOff, Eye } from 'lucide-react'
+import { Bell, Gift, Grid, MoreHorizontal, Phone, PlusCircle, Power, Send, ArrowRight, CircleUser, Tv, Keyboard, GraduationCap, MessageSquare, Repeat, X, Copy, Share2, EyeOff, Eye, Moon, Sun } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -31,9 +31,12 @@ export default function Component() {
   const { isAuthenticated, user, token, isTokenValid, logout, fetchUserData, updatePin } = useContext(AuthContext)
   const { transactions } = useContext(TransactionContext)
   const [showSetPinDialog, setShowSetPinDialog] = useState(false);
+  const [theme, setTheme] = useState('light')
+
+  // const [user, setUser] = useState({ firstName: 'User', walletBalance: '10,000.00' })
 
 
-  const recentTransactions = transactions.slice(0,3)
+  const recentTransactions = transactions.slice(0, 2)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -44,14 +47,14 @@ export default function Component() {
       navigate('/login');
     }
 
-    
-  }, [isAuthenticated, token, user]); // Reduce dependencies to only necessary ones
-  
+
+  }, [isAuthenticated, token,]); // Reduce dependencies to only necessary ones
+
 
   const services = [
     { icon: Grid, label: "Buy Data", path: "/buy-data" },
     { icon: Phone, label: "Airtime", path: "/airtime" },
-    { icon: Tv, label: "Cable TV",  path: "/cable-tv" },
+    { icon: Tv, label: "Cable TV", path: "/cable-tv" },
     { icon: Power, label: "Electricity", path: "/electricity" },
     { icon: Gift, label: "Referrals", path: "/referrals" },
     { icon: MoreHorizontal, label: "More", onClick: () => setShowMoreDialog(true) },
@@ -71,21 +74,25 @@ export default function Component() {
   const handleNavigation = (item) => {
     switch (item) {
       case "Home":
-        navigate("/dashboard") 
+        navigate("/dashboard")
         break;
       case "Services":
         setShowMoreDialog(true)
         break;
       case "Transactions":
-       navigate("/transactions")
+        navigate("/transactions")
         break;
       case "Profile":
-         navigate("/profile")
+        navigate("/profile")
         break;
       default:
         console.log("Unknown navigation item");
     }
   };
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light')
+  }
 
   const togglePinVisibility = (field) => {
     setShowPins(prev => ({
@@ -119,85 +126,135 @@ export default function Component() {
   const handleSetPinSubmit = async (e) => {
     try {
       e.preventDefault();
-    if (setPinFormData.newPin !== setPinFormData.confirmPin) {
-      toast.error("PINs do not match");
-      return;
-    }
+      if (setPinFormData.newPin !== setPinFormData.confirmPin) {
+        toast.error("PINs do not match");
+        return;
+      }
 
-    const pin = setPinFormData.newPin
-    const email = user.email
+      const pin = setPinFormData.newPin
+      const email = user.email
 
-    const payload = {pin, email }
-    
+      const payload = { pin, email }
 
-   const res = await updatePin(payload) 
 
-   console.log('Dash res', res.message);
-   
-    if (res.message == 'Transaction pin is too common, Please try another one') {
-      toast.error('Transaction pin is too common, Please try another one')
-      throw new Error('Transaction pin is too common, Please try another one')
+      const res = await updatePin(payload)
 
-    } else {
-      toast.success(`${res.message}`)
-      setShowSetPinDialog(false);
+      console.log('Dash res', res.message);
 
-    }
-        console.log('Set PIN submitted', setPinFormData);
+      if (res.message == 'Transaction pin is too common, Please try another one') {
+        toast.error('Transaction pin is too common, Please try another one')
+        throw new Error('Transaction pin is too common, Please try another one')
+
+      } else {
+        toast.success(`${res.message}`)
+        setShowSetPinDialog(false);
+
+      }
+      console.log('Set PIN submitted', setPinFormData);
     } catch (error) {
       console.log('error', error);
       setShowSetPinDialog(false);
-      throw new Error (`${error}`)
-      
+      throw new Error(`${error}`)
+
     } finally {
       setShowSetPinDialog(false);
     }
   };
-  
+
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-orange-600 to-[#660000]">
-      <header className="flex items-center justify-between p-4 md:p-6">
-        <div className="flex items-center gap-3">
-          <CircleUser width={'50px'} color="white" strokeWidth={2}/>
-          <div>
-            <p className="text-sm text-white/80">Welcome back!</p>
-            <h1 className="font-semibold text-white">{user?.firstName + ' ' + user?.lastName || 'User'} </h1>
+    <div className={`flex min-h-screen flex-col ${
+      theme === 'light' 
+        ? 'bg-grey' 
+        : 'bg-gradient-to-b from-zinc-600 to-zinc-800'
+    }`}>
+      <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-black/80 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-center justify-between p-4 md:p-6">
+          <div className="flex items-center gap-3">
+            <CircleUser 
+              width={'50px'} 
+              color={theme === 'light' ? '#8B0000' : '#8B0000'} 
+              strokeWidth={2} 
+            />
+            <div>
+              <p className={`text-sm ${
+                theme === 'light' ? 'text-grey-600' : 'text-grey-400'
+              }`}>Welcome back!</p>
+              <h1 className={`font-semibold ${
+                theme === 'light' ? 'text-zinc-900' : 'text-grey'
+              }`}>{user?.firstName || 'User'}</h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme} 
+              className={theme === 'light' ? 'text-zinc-700' : 'text-grey'}
+            >
+              {theme === 'light' ? <Moon className="h-5 w-5 text-grey" /> : <Sun className="h-5 w-5" />}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={theme === 'light' ? 'text-zinc-700' : 'text-grey-300'}
+            >
+              <Bell className="h-5 w-5" />
+            </Button>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="text-white">
-          <Bell className="h-5 w-5" />
-        </Button>
       </header>
 
       <main className="flex-1 space-y-4 p-4 pt-0 md:p-6 md:pt-0">
-        <Card className="bg-black/80 text-white">
+        <Card className={`${
+          theme === 'light'
+            ? 'bg-zinc-200 border-zinc-200 shadow-sm'
+            : 'bg-gradient-to-br from-[#8B0000] to-[#660000] border-zinc-800'
+        }`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-white/60">Wallet Balance</p>
-                <p className="text-2xl font-bold">
-                  { user ?"₦" + user?.walletBalance : "₦ ****" }
+                <p className={`text-sm ${
+                  theme === 'light' ? 'text-zinc-600' : 'text-zinc-300'
+                }`}>Wallet Balance</p>
+                <p className={`text-2xl font-bold ${
+                  theme === 'light' ? 'text-zinc-900' : 'text-white'
+                }`}>
+                  {user ? "₦" + user?.walletBalance : "₦ ****"}
                 </p>
               </div>
               <Button
                 variant="ghost"
                 onClick={() => setShowBalance(!showBalance)}
-                className="text-white"
+                className={`${
+                  theme === 'light' 
+                    ? 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100' 
+                    : 'text-zinc-300 hover:text-white hover:bg-white/10'
+                }`}
               >
                 {showBalance ? "Hide" : "Show"}
               </Button>
             </div>
-            <Separator className="my-4 bg-white/20" />
+            <Separator className={`my-4 ${
+              theme === 'light' ? 'bg-zinc-200' : 'bg-white/20'
+            }`} />
             <div className="grid grid-cols-2 gap-3">
               <Link to='/fund-wallet'>
-                <Button className="w-full bg-white/20 hover:bg-white/30">
+                <Button className={`w-full ${
+                  theme === 'light'
+                    ? 'bg-[#8B0000] text-white hover:bg-[#660000]'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Fund Wallet
                 </Button>
               </Link>
               <Link to='/transfer'>
-                <Button variant="outline" className="w-full border-white/20 text-orange-600 hover:bg-white/20">
+                <Button variant="outline" className={`w-full ${
+                  theme === 'light'
+                    ? 'border-[#8B0000] text-[#8B0000] hover:bg-[#8B0000]/10'
+                    : 'border-white/20 text-black hover:bg-white/10'
+                }`}>
                   <Send className="mr-2 h-4 w-4" />
                   Transfer
                 </Button>
@@ -210,41 +267,71 @@ export default function Component() {
           {services.map((service) => (
             service.path ? (
               <Link key={service.label} to={service.path}>
-                <Card className="bg-white/10 text-white hover:bg-white/20">
-                  <CardContent className="flex flex-col items-center justify-center p-3">
-                    <service.icon className="mb-1 h-5 w-5" />
-                    <span className="text-xs text-center">{service.label}</span>
+                <Card className={`${
+                  theme === 'light'
+                    ? 'bg-white border-zinc-200 hover:border-[#8B0000]/30 hover:shadow-md transition-all'
+                    : 'bg-black/40 border-zinc-800 hover:bg-black/60'
+                }`}>
+                  <CardContent className="flex flex-col items-center justify-center p-2">
+                    <service.icon className={`mb-0 h-3 w-3 ${
+                      theme === 'light' ? 'text-[#8B0000]' : 'text-white'
+                    }`} />
+                    <span className={`text-xs text-center ${
+                      theme === 'light' ? 'text-zinc-700' : 'text-zinc-300'
+                    }`}>{service.label}</span>
                   </CardContent>
                 </Card>
               </Link>
             ) : (
-              <Card 
-                key={service.label} 
-                className="bg-white/10 text-white hover:bg-white/20 cursor-pointer"
+              <Card
+                key={service.label}
+                className={`cursor-pointer ${
+                  theme === 'light'
+                    ? 'bg-white border-zinc-200 hover:border-[#8B0000]/30 hover:shadow-md transition-all'
+                    : 'bg-black/40 border-zinc-800 hover:bg-black/60'
+                }`}
                 onClick={service.onClick}
               >
-                <CardContent className="flex flex-col items-center justify-center p-3">
-                  <service.icon className="mb-1 h-5 w-5" />
-                  <span className="text-xs text-center">{service.label}</span>
+                <CardContent className="flex flex-col items-center justify-center p-2">
+                  <service.icon className={`mb-0 h-3 w-3 ${
+                    theme === 'light' ? 'text-[#8B0000]' : 'text-white'
+                  }`} />
+                  <span className={`text-xs text-center ${
+                    theme === 'light' ? 'text-zinc-700' : 'text-zinc-300'
+                  }`}>{service.label}</span>
                 </CardContent>
               </Card>
             )
           ))}
         </div>
 
-        <Card className="bg-black/80 text-white">
+        <Card className={`${
+          theme === 'light'
+            ? 'bg-white border-zinc-200'
+            : 'bg-black/40 border-zinc-800'
+        }`}>
           <CardContent className="p-0">
             <Tabs defaultValue="transactions" className="w-full">
-              <TabsList className="w-full justify-start rounded-none border-b border-white/20 bg-transparent">
+              <TabsList className={`w-full justify-start rounded-none border-b ${
+                theme === 'light' ? 'border-zinc-200 bg-transparent' : 'border-zinc-800 bg-transparent'
+              }`}>
                 <TabsTrigger
                   value="transactions"
-                  className="rounded-none data-[state=active]:bg-white data-[state=active]:text-black"
+                  className={`rounded-none ${
+                    theme === 'light'
+                      ? 'data-[state=active]:bg-[#8B0000] data-[state=active]:text-white'
+                      : 'data-[state=active]:bg-white data-[state=active]:text-[#8B0000]'
+                  }`}
                 >
                   Transactions
                 </TabsTrigger>
                 <TabsTrigger
                   value="analytics"
-                  className="text-white rounded-none data-[state=active]:bg-white data-[state=active]:text-black"
+                  className={`rounded-none ${
+                    theme === 'light'
+                      ? 'text-zinc-600 data-[state=active]:bg-[#8B0000] data-[state=active]:text-white'
+                      : 'text-zinc-400 data-[state=active]:bg-white data-[state=active]:text-[#8B0000]'
+                  }`}
                 >
                   Analytics
                 </TabsTrigger>
@@ -252,14 +339,32 @@ export default function Component() {
               <TabsContent value="transactions" className="p-4">
                 <div className="space-y-4">
                   {recentTransactions.map((transaction) => (
-                    <div key={transaction._id} className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedTransaction(transaction)}>
+                    <div 
+                      key={transaction._id} 
+                      className={`flex items-center justify-between p-3 rounded-lg cursor-pointer ${
+                        theme === 'light'
+                          ? 'bg-[#8B0000]/5 hover:bg-zinc-50'
+                          : 'bg-white/10 hover:bg-white/5'
+                      }`} 
+                      onClick={() => setSelectedTransaction(transaction)}
+                    >
                       <div className="flex items-center gap-4">
-                        <div className="rounded-full bg-white/20 p-2">
-                          <Grid className="h-4 w-4" />
+                        <div className={`rounded-full p-2 ${
+                          theme === 'light'
+                            ? 'bg-[#8B0000]/10'
+                            : 'bg-white/10'
+                        }`}>
+                          <Grid className={`h-4 w-4 ${
+                            theme === 'light' ? 'text-[#8B0000]' : 'text-zinc-200'
+                          }`} />
                         </div>
                         <div>
-                          <p className="font-medium">₦{transaction.description}</p>
-                          <p className="text-sm text-white/60">
+                          <p className={`font-medium ${
+                            theme === 'light' ? 'text-zinc-900' : 'text-white'
+                          }`}>₦{transaction.description}</p>
+                          <p className={`text-sm ${
+                            theme === 'light' ? 'text-zinc-600' : 'text-zinc-400'
+                          }`}>
                             {new Date(transaction.createdAt).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -268,14 +373,28 @@ export default function Component() {
                               hour12: true,
                             })}
                           </p>
-                          <p>{transaction.status}</p>
+                          <Badge variant={transaction.status === 'successful' ? 'success' : 'destructive'}>
+                            {transaction.status}
+                          </Badge>
                         </div>
                       </div>
-                      <p className="font-medium">₦{transaction.amount.toFixed(2)}</p>
+                      
+                      <p className={`font-medium ${
+                        theme === 'light' ? 'text-zinc-900' : 'text-white'
+                      }`}>₦{transaction.amount.toFixed(2)}</p>
+                      
                     </div>
+                    
                   ))}
                   <Link to='/transactions'>
-                    <Button variant="ghost" className="mt-3 w-full justify-between text-white hover:text-black">
+                    <Button 
+                      variant="ghost" 
+                      className={`mt-3 w-full justify-between ${
+                        theme === 'light'
+                          ? 'text-[#8B0000] hover:bg-[#8B0000]/10'
+                          : 'text-white hover:bg-white/10'
+                      }`}
+                    >
                       View All Transactions
                       <ArrowRight className="h-4 w-4" />
                     </Button>
@@ -284,18 +403,25 @@ export default function Component() {
               </TabsContent>
               <TabsContent value="analytics" className="p-4">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm">Total Transactions</p>
-                    <p className="text-lg font-semibold">127</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm">Data Usage</p>
-                    <p className="text-lg font-semibold">45.2 GB</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm">Airtime Purchases</p>
-                    <p className="text-lg font-semibold">₦15,000</p>
-                  </div>
+                  {[
+                    { label: 'Total Transactions', value: '127' },
+                    { label: 'Data Usage', value: '45.2 GB' },
+                    { label: 'Airtime Purchases', value: '₦15,000' }
+                  ].map((stat, index) => (
+                    <div 
+                      key={index}
+                      className={`flex items-center justify-between p-3 rounded-lg ${
+                        theme === 'light' ? 'bg-zinc-50' : 'bg-white/5'
+                      }`}
+                    >
+                      <p className={`text-sm ${
+                        theme === 'light' ? 'text-zinc-600' : 'text-zinc-400'
+                      }`}>{stat.label}</p>
+                      <p className={`text-lg font-semibold ${
+                        theme === 'light' ? 'text-zinc-900' : 'text-white'
+                      }`}>{stat.value}</p>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
             </Tabs>
@@ -303,78 +429,84 @@ export default function Component() {
         </Card>
       </main>
 
-      <footer className="border-t border-white/20 bg-black/80 p-4">
-  <div className="flex justify-around">
-    {["Home", "Services", "Transactions", "Profile"].map((item) => (
-      <Button
-        key={item}
-        variant="ghost"
-        className="text-white"
-        onClick={() => handleNavigation(item)} // Add onClick handler
-      >
-        {item}
-      </Button>
-    ))}
-  </div>
-</footer>
+      <footer className={`border-t ${
+        theme === 'light'
+          ? 'border-zinc-200 bg-[#8B0000]/20'
+          : 'border-zinc-800 bg-black/40'
+      } p-4`}>
+        <div className="flex justify-around">
+          {["Home", "Services", "Transactions", "Profile"].map((item) => (
+            <Button
+              key={item}
+              variant="ghost"
+              className={`${
+                theme === 'light'
+                  ? 'text-zinc-900 hover:text-[#8B0000]'
+                  : 'text-zinc-200 hover:text-black'
+              }`}
+              onClick={() => handleNavigation(item)}
+            >
+              {item}
+            </Button>
+          ))}
+        </div>
+      </footer>
 
- {/* Set PIN Dialog */}
- <Dialog open={showSetPinDialog} onOpenChange={setShowSetPinDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Set Your Transaction PIN</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSetPinSubmit} className="space-y-6">
-              <div className="relative">
-                <Input
-                  type={showPins.newPin ? "text" : "password"}
-                  name="newPin"
-                  placeholder="Enter New PIN"
-                  value={setPinFormData.newPin}
-                  onChange={handleSetPinFormChange}
-                  className="pr-10 w-full"
-                  maxLength={4}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                  onClick={() => togglePinVisibility('newPin')}
-                >
-                  {showPins.newPin ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
+      <Dialog open={showSetPinDialog} onOpenChange={setShowSetPinDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set Your Transaction PIN</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSetPinSubmit} className="space-y-6">
+            <div className="relative">
+              <Input
+                type={showPins.newPin ? "text" : "password"}
+                name="newPin"
+                placeholder="Enter New PIN"
+                value={setPinFormData.newPin}
+                onChange={handleSetPinFormChange}
+                className="pr-10 w-full"
+                maxLength={4}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                onClick={() => togglePinVisibility('newPin')}
+              >
+                {showPins.newPin ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
 
-              <div className="relative">
-                <Input
-                  type={showPins.confirmPin ? "text" : "password"}
-                  name="confirmPin"
-                  placeholder="Confirm New PIN"
-                  value={setPinFormData.confirmPin}
-                  onChange={handleSetPinFormChange}
-                  className="pr-10 w-full"
-                  maxLength={4}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                  onClick={() => togglePinVisibility('confirmPin')}
-                >
-                  {showPins.confirmPin ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
+            <div className="relative">
+              <Input
+                type={showPins.confirmPin ? "text" : "password"}
+                name="confirmPin"
+                placeholder="Confirm New PIN"
+                value={setPinFormData.confirmPin}
+                onChange={handleSetPinFormChange}
+                className="pr-10 w-full"
+                maxLength={4}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                onClick={() => togglePinVisibility('confirmPin')}
+              >
+                {showPins.confirmPin ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
 
-              <DialogFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-[#8B0000] hover:bg-orange-600 text-white"
-                >
-                  Set PIN
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-
+            <DialogFooter>
+              <Button
+                type="submit"
+                className="w-full bg-[#8B0000] hover:bg-[#8B0000]/80 text-white"
+              >
+                Set PIN
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showMoreDialog} onOpenChange={setShowMoreDialog}>
         <DialogContent className="max-w-sm max-h-[85vh] p-0">
@@ -387,12 +519,12 @@ export default function Component() {
             {moreServices.map((service) => (
               <Link key={service.label} to={service.path} className="block">
                 <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="rounded-full bg-orange-600 p-4">
-                    <service.icon className="h-3 w-3 text-white" />
+                  <div className={`rounded-full ${theme === 'light' ? 'bg-[#8B0000]' : 'bg-white'} p-4`}>
+                    <service.icon className={`h-3 w-3 ${theme === 'light' ? 'text-white' : 'text-[#8B0000]'}`} />
                   </div>
                   <div>
                     <p className="font-semibold">{service.label}</p>
-                    <p className="text-sm text-gray-500">{service.subtitle}</p>
+                    <p className={`text-sm ${theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}`}>{service.subtitle}</p>
                   </div>
                 </div>
               </Link>
@@ -412,19 +544,19 @@ export default function Component() {
                 <div className={`text-2xl font-bold ${selectedTransaction.type === 'credit' ? 'text-green-500' : 'text-red-500'}`}>
                   {selectedTransaction.type === 'credit' ? '+' : '-'} ₦{selectedTransaction.amount.toFixed(2)}
                 </div>
-                <Badge variant={selectedTransaction.status === 'successful' ? 'success' : 'destructive'}>
+                <Badge variant={selectedTransaction.status === 'successful' ? 'success' : 'outline'}>
                   {selectedTransaction.status}
                 </Badge>
-                <p className="text-sm text-muted-foreground">{selectedTransaction.description}</p>
+                <p className={`text-sm ${theme === 'light' ? 'text-[#8B0000]' : 'text-white'}`}>{selectedTransaction.description}</p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-muted-foreground">Date & Time</span>
+                <div className={`flex justify-between py-2 border-b ${theme === 'light' ? 'border-[#8B0000]/20' : 'border-white/20'}`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Date & Time</span>
                   <span>{format(new Date(selectedTransaction.createdAt), 'PPp')}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-muted-foreground">Reference</span>
+                <div className={`flex justify-between py-2 border-b ${theme === 'light' ? 'border-[#8B0000]/20' : 'border-white/20'}`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Reference</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono">{selectedTransaction._id}</span>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -432,21 +564,21 @@ export default function Component() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-muted-foreground">Type</span>
+                <div className={`flex justify-between py-2 border-b ${theme === 'light' ? 'border-[#8B0000]/20' : 'border-white/20'}`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Type</span>
                   <span>{selectedTransaction.type}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-muted-foreground">Network</span>
+                <div className={`flex justify-between py-2 border-b ${theme === 'light' ? 'border-[#8B0000]/20' : 'border-white/20'}`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Network</span>
                   <span>{selectedTransaction.network}</span>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Button className="flex-1" onClick={() => setShowReceipt(true)}>
+                <Button className={`flex-1 ${theme === 'light' ? 'bg-[#8B0000] text-white hover:bg-[#8B0000]/80' : 'bg-[#8B0000]/20 text-[#8B0000] hover:bg-white/80'}`} onClick={() => setShowReceipt(true)}>
                   View Receipt
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className={theme === 'light' ? 'border-[#8B0000] text-[#8B0000]' : 'border-black text-black'}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -462,33 +594,33 @@ export default function Component() {
           </DialogHeader>
           {selectedTransaction && (
             <div className="space-y-6">
-              <div className="bg-muted/50 p-4 rounded-lg">
+              <div className={`${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-white/10'} p-4 rounded-lg`}>
                 <div className="text-center space-y-2">
-                  <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                  <Badge variant="outline" className={`${theme === 'light' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-green-500/20 text-green-400 border-green-400/30'}`}>
                     completed
                   </Badge>
                   <h3 className="text-xl font-semibold">Transaction Summary</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className={`text-sm ${theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}`}>
                     Here is a Summary of the selected Transaction and it can be shared if desired.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between py-2 bg-muted/50 px-4 rounded">
-                  <span className="text-muted-foreground">Transaction type</span>
+                <div className={`flex justify-between py-2 ${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-[#8B0000]/5'} px-4 rounded`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Transaction type</span>
                   <span className="font-medium">{selectedTransaction.type}</span>
                 </div>
-                <div className="flex justify-between py-2 bg-muted/50 px-4 rounded">
-                  <span className="text-muted-foreground">Amount</span>
+                <div className={`flex justify-between py-2 ${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-[#8B0000]/5'} px-4 rounded`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Amount</span>
                   <span className="font-medium">₦{selectedTransaction.amount.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between py-2 bg-muted/50 px-4 rounded">
-                  <span className="text-muted-foreground">Date | Time</span>
+                <div className={`flex justify-between py-2 ${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-[#8B0000]/5'} px-4 rounded`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Date | Time</span>
                   <span className="font-medium">{format(new Date(selectedTransaction.createdAt), 'dd - MMM - yy | pp')}</span>
                 </div>
-                <div className="flex justify-between py-2 bg-muted/50 px-4 rounded">
-                  <span className="text-muted-foreground">Transaction ID</span>
+                <div className={`flex justify-between py-2 ${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-[#8B0000]/5'} px-4 rounded`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Transaction ID</span>
                   <div className="flex items-center gap-2">
                     <span className="font-medium font-mono">{selectedTransaction._id}</span>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -496,17 +628,17 @@ export default function Component() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between py-2 bg-muted/50 px-4 rounded">
-                  <span className="text-muted-foreground">Network</span>
+                <div className={`flex justify-between py-2 ${theme === 'light' ? 'bg-[#8B0000]/10' : 'bg-[#8B0000]/5'} px-4 rounded`}>
+                  <span className={theme === 'light' ? 'text-[#8B0000]/60' : 'text-black'}>Network</span>
                   <span className="font-medium">{selectedTransaction.network}</span>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" className={`flex-1 ${theme === 'light' ? 'border-[#8B0000] text-[#8B0000]' : 'border-[#8B0000]/40 text-black'}`}>
                   Save Receipt
                 </Button>
-                <Button className="flex-1">
+                <Button className={`flex-1 ${theme === 'light' ? 'bg-[#8B0000] text-black hover:bg-[#8B0000]/80' : 'bg-[#8B0000]/5 text-[#8B0000] hover:bg-white/80'}`}>
                   Share Receipt
                 </Button>
               </div>
@@ -517,3 +649,7 @@ export default function Component() {
     </div>
   )
 }
+
+
+
+
