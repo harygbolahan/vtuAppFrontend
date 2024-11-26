@@ -266,8 +266,8 @@ export default function ProfileDetails() {
                   onChange={(e) => handleInputChange("gender", e.target.value)}
                 >
                   <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
                 </select>
               </div>
 

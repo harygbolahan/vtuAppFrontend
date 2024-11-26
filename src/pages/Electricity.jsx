@@ -5,34 +5,12 @@ import { ArrowLeft, Contact2, Copy, Loader2, Check, X, Receipt, Download, Share2
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "react-toastify"
 import { Link, useNavigate } from "react-router-dom"
 
-// type ValidationResult = {
-//   is_valid: boolean
-//   customer_name: string
-//   customer_address: string
-//   customer_district: string
-//   customer_phone: string
-//   type: 'PREPAID' | 'POSTPAID'
-//   disco: string
-//   minimum_payable: number
-//   outstanding_amount: number | null
-// }
-
-// type Disco = {
-//   discoName: string
-//   discoId: string
-//   discoCode: string
-//   minAmount: number
-//   maxAmount: number
-//   convenienceFee: number
-//   logo: string
-// }
 
 const discos = [
   {

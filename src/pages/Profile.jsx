@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-'use client'
-
+import { useContext } from 'react'
+import { AuthContext } from '../contexts/authContexts'
 import { Bell, CreditCard, FileText,  KeyRound, Lock, LogOut, MessageSquare, PieChart, Shield, Users, UserCircle, Building2, ArrowLeft} from 'lucide-react'
 // import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,6 +9,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Link } from 'react-router-dom'
 
 export default function ProfilePage() {
+  const { user } = useContext(AuthContext); 
+
+  console.log('User', user);
+  
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -24,11 +29,11 @@ export default function ProfilePage() {
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16 border-2 border-[#8B0000]">
             <AvatarImage src="/placeholder.svg" alt="Profile picture" />
-            <AvatarFallback>MO</AvatarFallback>
+            <AvatarFallback>{user?.firstName[0].toUpperCase() + user?.lastName[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h2 className="text-xl font-semibold">@harry12345</h2>
-            <p className="text-gray-600">Safe Haven MFB - 8022216524</p>
+            <h2 className="text-xl font-semibold">{user?.firstName + ' ' + user?.lastName}</h2>
+            <p className="text-gray-600">{user?.bank || 'SafeHaven'}</p>
           </div>
         </div>
         
@@ -36,12 +41,12 @@ export default function ProfilePage() {
         <Card className="mt-4 bg-gray-50">
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <PieChart className="text-orange-500" />
-              <span className="font-medium">Level 2</span>
+              <PieChart className={user?.isVerified ? 'text-green-600' : 'text-[#8B0000]'} size={30} />
+              <span className="font-medium text-2xl">{user?.isVerified ? 'Verified' : 'Not Verified'}</span>
             </div>
-            <Button variant="outline" className="text-[#8B0000]">
-              Upgrade
-            </Button>
+            {!user?.isVerified && <Button variant="outline" className="text-[#8B0000]">
+              Verify
+            </Button>}
           </CardContent>
         </Card>
       </div>
