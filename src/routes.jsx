@@ -21,6 +21,7 @@ import Support from './pages/Support'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
+import VerifyAccountPage from './pages/verifyAccount'
 import AdminDashboard from './admin/pages/Dashboard'
 import UsersManagement from './admin/pages/Users'
 import ServicesManagement from './admin/pages/Services'
@@ -52,6 +53,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-account" element={<VerifyAccountPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UsersManagement />} />
         <Route path="/admin/services" element={<ServicesManagement />} />

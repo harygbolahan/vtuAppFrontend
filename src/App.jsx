@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthProvider from "./contexts/authContexts";
 import TransactionProvider from "./contexts/txnContext";
+import WalletProvider from "./contexts/walletContexts";
 
 
 function App() {
@@ -11,10 +12,12 @@ function App() {
   return (
     <>
       <AuthProvider>
-      <TransactionProvider>
-        <AppRoutes />
-        <ToastContainer position='top-right' autoClose={5000} hideProgressBar={false} closeOnClick draggable pauseOnHover theme="dark" />
-        </TransactionProvider>
+        <WalletProvider>
+          <TransactionProvider>
+            <AppRoutes />
+            <ToastContainer position='top-right' autoClose={5000} hideProgressBar={false} closeOnClick draggable pauseOnHover theme="dark" />
+          </TransactionProvider>
+        </WalletProvider>
       </AuthProvider>
 
     </>

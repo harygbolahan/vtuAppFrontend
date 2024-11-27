@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "../contexts/authContexts"
-import { TransactionContext } from "../contexts/txnContext"
-import { ArrowLeft, Rocket, CreditCard, Copy, Building } from 'lucide-react';
+import { ArrowLeft, Rocket, CreditCard, Copy, Building, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +10,15 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const FundWalletPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, isTokenValid, token } = useContext(AuthContext)
-  const { plans } = useContext(TransactionContext)
+  const { isAuthenticated, isTokenValid, token, user, fetchUserData } = useContext(AuthContext)
   const [currentView, setCurrentView] = useState('main');
   const [timeLeft, setTimeLeft] = useState(3600);
   const [amount, setAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchUserData()
+  })
 
 
   useEffect(() => {
@@ -100,6 +102,40 @@ const FundWalletPage = () => {
     }, 2000);
   };
 
+  const handleGenerateAccountDetails = () => {
+    setIsSubmitting(true);
+    // Simulating API call to generate account details
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast.success("Account details generated successfully!")
+      // Here you would typically update the user's bank details in your state or context
+    }, 2000);
+  };
+
+  const renderVerificationCard = () => (
+    <Card className="mb-6">
+      <CardContent className="flex flex-col items-center gap-4 p-6">
+        <AlertCircle className="h-12 w-12 text-yellow-500" />
+        <CardTitle className="text-center">Account Verification Required</CardTitle>
+        <p className="text-center text-muted-foreground">
+          Please verify your account with BVN or NIN to access Dedication accounts
+        </p>
+        <div className="text-sm text-muted-foreground">
+                <p>Why we need this information:</p>
+                <ul className="list-disc list-inside space-y-1 mt-2">
+                  <li>To comply with CBN Know Your Customer (KYC) regulations</li>
+                  <li>To protect your account from unauthorized access</li>
+                  <li>To enable higher transaction limits on your account</li>
+                  <li>To facilitate seamless inter-bank transactions</li>
+                </ul>
+              </div>
+        <Button className='bg-[#8B0000]' onClick={() => navigate('/verify-account')}>
+          Verify Account
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
   const renderMainView = () => (
     <div className="space-y-6">
       <div className="grid gap-4">
@@ -136,41 +172,57 @@ const FundWalletPage = () => {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Wallet Account</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Make transfer to any of the below accounts
-          </p>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {walletAccounts.map((account) => (
-            <div
-              key={account.accountNumber}
-              className="flex items-start justify-between p-4 rounded-lg border"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-mono text-lg">{account.accountNumber}</p>
-                  <button
-                    onClick={() => handleCopy(account.accountNumber, "Account number")}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </button>
+      {user.kycStatus === 'unverified' ? (
+        renderVerificationCard()
+      ) : user.bankDetails && user.bankDetails.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Wallet Account</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Make transfer to any of the below accounts
+            </p>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {walletAccounts.map((account) => (
+              <div
+                key={account.accountNumber}
+                className="flex items-start justify-between p-4 rounded-lg border"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-mono text-lg">{account.accountNumber}</p>
+                    <button
+                      onClick={() => handleCopy(account.accountNumber, "Account number")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{account.accountName}</p>
+                  <p className="font-medium">{account.bankName}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{account.accountName}</p>
-                <p className="font-medium">{account.bankName}</p>
+                {account.isRecommended && (
+                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50">
+                    Recommended
+                  </Badge>
+                )}
               </div>
-              {account.isRecommended && (
-                <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50">
-                  Recommended
-                </Badge>
-              )}
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-4 p-6">
+            <CardTitle>Generate Account Details</CardTitle>
+            <p className="text-center text-muted-foreground">
+              You don&#39;t have any account details yet. Generate them to receive funds.
+            </p>
+            <Button onClick={handleGenerateAccountDetails} disabled={isSubmitting}>
+              {isSubmitting ? "Generating..." : "Generate Account Details"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 
@@ -277,18 +329,15 @@ const FundWalletPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col ">
-      <Link to='/dashboard'>
-      <ArrowLeft className='h-8 w-8 mt-5 mx-10' />
-
-      </Link>
-      <header className="sticky top-0 z-10 bg-white border-b">
+      <header className="sticky top-0 z-10 bg-white border-b  ">
         <div className="container flex items-center h-14 px-4 max-w-xl mx-auto">
           {currentView !== 'main' && (
             <button onClick={() => setCurrentView('main')} className="mr-3">
-              <ArrowLeft className="h-6 w-6" />
+              <ArrowLeft className="h-4 w-4" />
             </button>
           )}
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold flex items-center ">
+            
             {currentView === 'main' ? 'Add Funds' : 
              currentView === 'bankTransfer' ? 'Quick Bank Transfer' : 'Fund with Card'}
           </h1>
@@ -304,4 +353,5 @@ const FundWalletPage = () => {
 };
 
 export default FundWalletPage;
+
 
