@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useMemo } from "react"
+import { useState, useContext, useEffect } from "react"
 import { AuthContext } from "../contexts/authContexts"
 import { WalletContext } from "../contexts/walletContexts"
 import { ArrowLeft, Shield } from 'lucide-react'
@@ -13,7 +13,7 @@ import moment from 'moment';
 
 const VerifyAccountPage = () => {
     const navigate = useNavigate()
-    const { isAuthenticated, isTokenValid, token, user, fetchUserData } = useContext(AuthContext)
+    const { isAuthenticated, isTokenValid, token,  fetchUserData } = useContext(AuthContext)
     const { verifyNIN, verifyBVN } = useContext(WalletContext)
 
     const [verificationMethod, setVerificationMethod] = useState('nin')

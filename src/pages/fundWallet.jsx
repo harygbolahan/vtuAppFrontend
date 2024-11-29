@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "../contexts/authContexts"
+import { WalletContext } from '../contexts/walletContexts';
 import { ArrowLeft, Rocket, CreditCard, Copy, Building, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,37 +12,31 @@ import { Link, useNavigate } from 'react-router-dom';
 const FundWalletPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isTokenValid, token, user, fetchUserData } = useContext(AuthContext)
+  const { generateAccountDetails } = useContext(WalletContext)
   const [currentView, setCurrentView] = useState('main');
   const [timeLeft, setTimeLeft] = useState(3600);
   const [amount, setAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchUserData()
-  })
+  // useEffect(() => {
+  //   fetchUserData()
+  // })
 
 
   useEffect(() => {
     if (!isAuthenticated || !isTokenValid(token)) {
       toast.error("Session expired. Please login again.")
       navigate("/login")
-    }
-  }, [isAuthenticated, token, navigate, isTokenValid])
+    } else {
+      // fetchUserData()
 
-  const walletAccounts = [
-    {
-      accountNumber: "8022216524",
-      accountName: "Mubarak Oyekanmi",
-      bankName: "Safe Haven MFB",
-      isRecommended: false,
-    },
-    {
-      accountNumber: "8880000157",
-      accountName: "Mubarak Oyekanmi",
-      bankName: "Rubies MFB",
-      isRecommended: true,
-    },
-  ];
+    }
+  }, [isAuthenticated, token, navigate, isTokenValid, fetchUserData])
+
+  const walletAccounts = user?.bankDetails
+
+  console.log('Wallet accounts', walletAccounts);
+
 
   const transferDetails = {
     amount: 505.00,
@@ -102,14 +97,35 @@ const FundWalletPage = () => {
     }, 2000);
   };
 
-  const handleGenerateAccountDetails = () => {
-    setIsSubmitting(true);
-    // Simulating API call to generate account details
-    setTimeout(() => {
+  const handleGenerateAccountDetails = async () => {
+    try {
+      setIsSubmitting(true);
+
+      const reference = `${user?.firstName}${user?.lastName}${Math.floor(Math.random() * 1000000)} `
+
+      const accountData = {
+        accountName: user?.firstName + ' ' + user?.lastName,
+        customerEmail: user?.email,
+        customerName: user?.firstName + ' ' + user?.lastName,
+        nin: user?.nin,
+        bvn: user?.bvn,
+        accountReference: reference
+      }
+
+      console.log('Account Deta', accountData);
+
+      const response = await generateAccountDetails(accountData)
+
+      console.log('Response', response);
+
+    } catch (error) {
+      console.log('Error', error);
+
+    } finally {
       setIsSubmitting(false);
-      toast.success("Account details generated successfully!")
-      // Here you would typically update the user's bank details in your state or context
-    }, 2000);
+    }
+
+
   };
 
   const renderVerificationCard = () => (
@@ -121,14 +137,14 @@ const FundWalletPage = () => {
           Please verify your account with BVN or NIN to access Dedication accounts
         </p>
         <div className="text-sm text-muted-foreground">
-                <p>Why we need this information:</p>
-                <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>To comply with CBN Know Your Customer (KYC) regulations</li>
-                  <li>To protect your account from unauthorized access</li>
-                  <li>To enable higher transaction limits on your account</li>
-                  <li>To facilitate seamless inter-bank transactions</li>
-                </ul>
-              </div>
+          <p>Why we need this information:</p>
+          <ul className="list-disc list-inside space-y-1 mt-2">
+            <li>To comply with CBN Know Your Customer (KYC) regulations</li>
+            <li>To protect your account from unauthorized access</li>
+            <li>To enable higher transaction limits on your account</li>
+            <li>To facilitate seamless inter-bank transactions</li>
+          </ul>
+        </div>
         <Button className='bg-[#8B0000]' onClick={() => navigate('/verify-account')}>
           Verify Account
         </Button>
@@ -329,17 +345,28 @@ const FundWalletPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col ">
-      <header className="sticky top-0 z-10 bg-white border-b  ">
+      <header className="sticky top-0 z-10 bg-white border-b  ">
         <div className="container flex items-center h-14 px-4 max-w-xl mx-auto">
+  
           {currentView !== 'main' && (
             <button onClick={() => setCurrentView('main')} className="mr-3">
               <ArrowLeft className="h-4 w-4" />
             </button>
           )}
-          <h1 className="text-xl font-semibold flex items-center ">
-            
-            {currentView === 'main' ? 'Add Funds' : 
-             currentView === 'bankTransfer' ? 'Quick Bank Transfer' : 'Fund with Card'}
+  
+          <h1 className="text-xl font-semibold  items-center  ">
+            {currentView === 'main' ? (
+              <Link to="/dashboard">
+                <div className='flex items-center'>
+                <ArrowLeft className="h-6 w-6 mr-4" />
+                <h2>Add Funds</h2>
+                </div>
+              </Link>
+            ) : currentView === 'bankTransfer' ? (
+              'Quick Bank Transfer'
+            ) : (
+              'Fund with Card'
+            )}
           </h1>
         </div>
       </header>
