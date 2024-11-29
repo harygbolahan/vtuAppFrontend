@@ -37,7 +37,7 @@ const networks = [
 
 export default function Component() {
   const { isAuthenticated, isTokenValid, token, user } = useContext(AuthContext)
-  const { plans, buyData } = useContext(TransactionContext)
+  const { plans, buyData, pollJobStatus } = useContext(TransactionContext)
   const [step, setStep] = useState(1)
   const [networkTypes, setNetworkTypes] = useState([])
   const [formData, setFormData] = useState({
@@ -127,35 +127,75 @@ export default function Component() {
     setStep((prev) => prev - 1)
   }
 
+  // const handleCompletePurchase = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //       if (user.transaction_pin !== formData.pin) {
+  //           toast.error("Invalid pin. Please try again.")
+  //           return
+  //       }
+
+  //     const res = await buyData(formData)
+  //     setIsLoading(false)
+  //     setStep(4)
+  //     setPurchaseResult(res)
+  //     // console.log('DataBundle', res)
+
+  //     if (res.message === "Data purchase successful") {
+  //       toast.success(`Data purchase successful`)
+  //     } else {
+  //       toast.error("Data purchase failed; refund issued")
+  //     }
+  //   } catch (error) {
+  //     console.log('catch error', error)
+  //     setPurchaseResult(error)
+  //     setStep(4) // Move to step 4 even if there's an error
+  //     toast.error("Data purchase failed. Please try again.")
+  //   } finally {
+  //     setIsLoading(false)
+  //     setFormData((prev) => ({ ...prev, pin: "" }))
+  //   }
+  // }
+
   const handleCompletePurchase = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
+  
     try {
-        if (user.transaction_pin !== formData.pin) {
-            toast.error("Invalid pin. Please try again.")
-            return
-        }
+      // Step 1: Remove insecure PIN validation (should be done on backend)
+      // Step 2: Make the purchase request
+      const apiResponse = await buyData(formData);
+  
+      if (!apiResponse) {
+        setIsLoading(false);
+        toast.error("Failed to complete the data purchase.");
+        return;
+      }
+  
+      console.log('Frontend api', apiResponse);
+      
+      // Step 3: Update the UI with the result
+      setPurchaseResult(apiResponse.data);
 
-      const res = await buyData(formData)
-      setIsLoading(false)
-      setStep(4)
-      setPurchaseResult(res)
-      // console.log('DataBundle', res)
+      setStep(4);
+      
+      
+      console.log(purchaseResult);
 
-      if (res.message === "Data purchase successful") {
-        toast.success(`Data purchase successful`)
+  
+      if (apiResponse.data.Status?.toLowerCase() === "successful") {
+        toast.success(apiResponse.data.api_response || "Data purchase successful!");
       } else {
-        toast.error("Data purchase failed; refund issued")
+        toast.error(apiResponse.data.api_response || "Data purchase failed; refund issued.");
       }
     } catch (error) {
-      console.log('catch error', error)
-      setPurchaseResult(error)
-      setStep(4) // Move to step 4 even if there's an error
-      toast.error("Data purchase failed. Please try again.")
+      console.error("Error in handleCompletePurchase:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
-      setFormData((prev) => ({ ...prev, pin: "" }))
+      setIsLoading(false);
+      setFormData((prev) => ({ ...prev, pin: "" })); // Clear PIN input
     }
-  }
+  };
+  
 
   const filteredPlans = useMemo(() => {
     if (formData.network && formData.networkType && plans?.allPlans) {
@@ -335,11 +375,11 @@ export default function Component() {
     <div className="space-y-6">
       <div className="text-center space-y-4 items-center">
         <div className="text-center space-y-4">
-          <div className={`text-3xl font-bold ${purchaseResult?.message === "Data purchase successful" ? "text-green-700" : "text-red-700"}`}>
-            {purchaseResult?.message === "Data purchase successful" ? "Success!" : "Purchase Failed"}
+          <div className={`text-3xl font-bold ${purchaseResult?.Status == "successful" ? "text-green-700" : "text-red-700"}`}>
+            {purchaseResult?.Status == "successful" ? "Success!" : "Purchase Failed"}
           </div>
           <p>
-            {purchaseResult?.message || "An error occurred during the purchase."}
+            {purchaseResult?.api_response || "An error occurred during the purchase."}
           </p>
           {purchaseResult && purchaseResult.transaction && (
             <div className="mt-4 text-left">

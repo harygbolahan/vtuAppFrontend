@@ -87,29 +87,106 @@ const TransactionProvider = ({ children }) => {
 
   //Buy Data
 
+  // const buyData = async (formData) => {
+  //   // setLoading(true);
+  //   try {
+  //     const res = await axios.post(`${apiUrl}/data/purchase`, {
+  //       formData
+  //     }, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     // console.log("Res", res.data);
+  //     //   setLoading(false)
+  //     return res.data;
+  //   } catch (err) {
+  //     console.log("Error", err.response.data);
+
+  //     toast.error(err?.response?.data.message || "Failed to buy data");
+
+  //     return err.response.data.error;
+
+  //   }
+  // }
+
   const buyData = async (formData) => {
-    // setLoading(true);
     try {
-      const res = await axios.post(`${apiUrl}/data/purchase`, {
-        formData
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log("Res", res.data);
-      //   setLoading(false)
-      return res.data;
+      // Step 1: Enqueue the purchase job
+      const res = await axios.post(
+        `${apiUrl}/data/purchase`,
+        { formData },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      toast.success("Your request has been queued. Processing now...");
+      const jobId = res.data?.jobId;
+      if (!jobId) {
+        toast.error("Failed to retrieve job details.");
+        return null;
+      }
+  
+      // Step 2: Poll job status
+      const pollJobStatus = async () => {
+        const statusResponse = await axios.get(`${apiUrl}/data/status/${jobId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        return statusResponse.data;
+      };
+  
+      const maxRetries = 10;
+      const delay = 3000;
+      let retries = 0;
+  
+      while (retries < maxRetries) {
+        const statusData = await pollJobStatus();
+  
+        if (statusData.data?.state === "completed") {
+          toast.success("Data purchase successful!");
+          return statusData.data.apiResponse; // Return API response
+        } else if (statusData.data?.state === "failed") {
+          toast.error(`Data purchase failed: ${statusData.data.error || "Unknown error"}`);
+          return null;
+        }
+  
+        // Wait before the next retry
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        retries++;
+      }
+  
+      toast.error("Data purchase is taking longer than expected. Please check back later.");
+      return null;
     } catch (err) {
-      console.log("Error", err.response.data);
-
-      toast.error(err?.response?.data.message || "Failed to buy data");
-
-      return err.response.data.error;
-
+      console.error("Error in buyData:", err.response?.data);
+      toast.error(err?.response?.data?.message || "Failed to initiate data purchase");
+      return null;
     }
-  }
+  };
+  
+
+  // const pollJobStatus = async (jobId) => {
+  //   try {
+  //     const res = await axios.get(`${apiUrl}/data/status/${jobId}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log('Poll Job status', res.data);
+      
+  //     return res.data; // { status: 'completed', result: { ... } }
+  //   } catch (error) {
+  //     console.error("Error polling job status:", error);
+  //     return { status: "failed" }; // Default to failed if polling fails
+  //   }
+  // };
+  
+  
 
   const buyAirtime = async (formData) => {
     // setLoading(true);
@@ -300,6 +377,7 @@ const TransactionProvider = ({ children }) => {
     selectedTransaction,
     fetchTransactions,
     buyData,
+    // pollJobStatus,
     buyAirtime,
     fetchDataPlans,
     plans,
