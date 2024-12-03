@@ -22,10 +22,13 @@ import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import VerifyAccountPage from './pages/verifyAccount'
-import AdminDashboard from './admin/pages/Dashboard'
-import UsersManagement from './admin/pages/Users'
-import ServicesManagement from './admin/pages/Services'
-import TransactionsManagement from './admin/pages/Transactions'
+// import AdminDashboard from './admin/pages/Dashboard'
+// import UsersManagement from './admin/pages/Users'
+// import ServicesManagement from './admin/pages/Services'
+// import TransactionsManagement from './admin/pages/Transactions'
+
+import AdminLogin from './pages/Admin/Login'
+import AdminDashboard from './pages/Admin/Dashboard'
 
 const AppRoutes = () => {
   return (
@@ -54,11 +57,10 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-account" element={<VerifyAccountPage />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/users" element={<UsersManagement />} />
-        <Route path="/admin/services" element={<ServicesManagement />} />
-        <Route path="/admin/transactions" element={<TransactionsManagement />} />
+      
 
+        <Route path='/404/admin/login' element={<AdminLogin />} />
+        <Route path='/404/admin/dashboard' element={<AdminDashboard />} />
 
 
       </Routes>

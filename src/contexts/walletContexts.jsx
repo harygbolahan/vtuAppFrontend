@@ -105,6 +105,29 @@ export const WalletProvider = ({ children }) => {
         }
     }
 
+    const generateDynamicAccount = async (accountData) => {
+        try {
+            const response = await axios.post(`${apiUrl}/monnify/reserve-account`, {accountData}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log('Auth Account', response);
+
+            if (response.status == '200') {
+                toast.success('Account details generated successfully');
+                return response.data.data;
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (error) {
+            console.log(error);
+
+            toast.error('Error generating account details');
+        }
+    }
+
     const values = {
         // loading,
         // accounts,

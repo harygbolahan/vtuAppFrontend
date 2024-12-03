@@ -321,6 +321,28 @@ const AuthProvider = ({ children }) => {
         }
     }
 
+    const adminLogin = async (email, password) => {
+        try {
+            const payload = {
+                email,
+                password
+            }
+            
+            console.log('Payload', email, password);
+            const res = await axios.post(`${apiUrl}/administrator/auth/adminlogin`, payload    , {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            return res.data
+
+        } catch (error) {
+            console.log('Auth err', error.response.data);
+            return error.response.data
+
+        }
+    }
+
 
 
     const logout = () => {
@@ -339,6 +361,7 @@ const AuthProvider = ({ children }) => {
         user,
         signup,
         login,
+        adminLogin,
         logout,
         updateProfile,
         isAuthenticated,
